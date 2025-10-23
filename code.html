@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prospect Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        :root {
+            --bg-dark: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #f59e0b;
+            --accent-hover: #fbbf24;
+            --border-color: #334155;
+            --hover-bg: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .nav-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .nav-item i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .upgrade-btn {
+            background: linear-gradient(90deg, var(--accent), #f97316);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            width: 100%;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upgrade-btn:hover {
+            background: linear-gradient(90deg, var(--accent-hover), #fb923c);
+            transform: translateY(-2px);
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .footer-item:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-item i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: var(--border-color);
+            border-radius: 3px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 65%;
+            background-color: var(--accent);
+            border-radius: 3px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-bar i {
+            color: var(--text-secondary);
+            margin-right: 0.75rem;
+        }
+
+        .search-bar input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+
+        .search-input {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input i {
+            color: var(--text-secondary);
+            margin-right: 0.75rem;
+        }
+
+        .search-input input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .filters-section {
+            margin-bottom: 2rem;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .filter-header i {
+            margin-right: 0.5rem;
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-tag {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tag:hover {
+            background-color: var(--accent);
+        }
+
+        .locked-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .locked-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .locked-content i {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .locked-text h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+            color: var(--accent);
+        }
+
+        .locked-text p {
+            color: var(--text-secondary);
+        }
+
+        .locked-features {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .locked-feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+        }
+
+        .locked-feature i {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .view-plans-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-plans-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .nav-item span, .logo h1, .footer-item span {
+                display: none;
+            }
+            
+            .nav-item {
+                justify-content: center;
+                padding: 0.75rem;
+            }
+            
+            .nav-item i {
+                margin-right: 0;
+            }
+            
+            .sidebar-footer {
+                padding: 1rem 0.5rem 0;
+            }
+            
+            .footer-item {
+                justify-content: center;
+            }
+            
+            .footer-item i {
+                margin-right: 0;
+            }
+            
+            .upgrade-btn span {
+                display: none;
+            }
+            
+            .upgrade-btn::after {
+                content: "↑";
+                font-size: 1.25rem;
+            }
+            
+            .progress-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 1rem;
+            }
+            
+            .nav-items {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            
+            .nav-item {
+                flex-shrink: 0;
+                margin: 0 0.25rem;
+            }
+            
+            .sidebar-footer {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1.5rem;
+            }
+            
+            .locked-section {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .locked-features {
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .locked-features {
+                gap: 0.5rem;
+            }
+            
+            .locked-feature {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>ProspectAI</h1>
+        </div>
+        
+        <div class="nav-items">
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Prospect</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-user-friends"></i>
+                <span>Find people</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-building"></i>
+                <span>Find companies</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-list"></i>
+                <span>Lists</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-paper-plane"></i>
+                <span>Outreach</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-stream"></i>
+                <span>Sequences</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-envelope"></i>
+                <span>Emails</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-phone"></i>
+                <span>Calls</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-calendar"></i>
+                <span>Meetings</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-comments"></i>
+                <span>Conversations</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-database"></i>
+                <span>Manage records</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-handshake"></i>
+                <span>Deals</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-magic"></i>
+                <span>Data enrichment</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-tools"></i>
+                <span>Tools</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-sync-alt"></i>
+                <span>Workflows</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-eye"></i>
+                <span>Website visitors</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Forms</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button class="upgrade-btn">
+                <i class="fas fa-crown"></i>
+                <span>Upgrade Plan</span>
+            </button>
+            
+            <div class="footer-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Onboarding hub</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            
+            <div class="footer-item">
+                <i class="fas fa-truck"></i>
+                <span>Deliverability suite</span>
+            </div>
+            
+            <div class="footer-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </div>
+            
+            <div class="footer-item">
+                <i class="fas fa-cog"></i>
+                <span>Admin settings</span>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search across AI tools...">
+        </div>
+        
+        <div class="section-header">
+            <h2>Use AI to find the right prospects.</h2>
+            <p>Search across millions of professionals and companies</p>
+        </div>
+        
+        <div class="search-input">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Try: Marketing Director in New York">
+        </div>
+        
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-card">
+                    <div class="filter-header">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Location</h3>
+                    </div>
+                    <div class="filter-tags">
+                        <div class="filter-tag">United States</div>
+                        <div class="filter-tag">Canada</div>
+                    </div>
+                </div>
+                
+                <div class="filter-card">
+                    <div class="filter-header">
+                        <i class="fas fa-briefcase"></i>
+                        <h3>Job Titles</h3>
+                    </div>
+                    <div class="filter-tags">
+                        <div class="filter-tag">Founder</div>
+                        <div class="filter-tag">Sales Manager</div>
+                        <div class="filter-tag">Marketing Director</div>
+                    </div>
+                </div>
+                
+                <div class="filter-card">
+                    <div class="filter-header">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Email Status</h3>
+                    </div>
+                    <div class="filter-tags">
+                        <div class="filter-tag">Verified</div>
+                        <div class="filter-tag">Unverified</div>
+                        <div class="filter-tag">Unavailable</div>
+                    </div>
+                </div>
+                
+                <div class="filter-card">
+                    <div class="filter-header">
+                        <i class="fas fa-industry"></i>
+                        <h3>Industry</h3>
+                    </div>
+                    <div class="filter-tags">
+                        <div class="filter-tag">IT Services</div>
+                        <div class="filter-tag">Marketing & Advertising</div>
+                        <div class="filter-tag">Retail</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="locked-section">
+            <div class="locked-content">
+                <i class="fas fa-lock"></i>
+                <div class="locked-text">
+                    <h3>Unlock advanced filters</h3>
+                    <p>Access more precise targeting options</p>
+                </div>
+            </div>
+            
+            <div class="locked-features">
+                <div class="locked-feature">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Revenue</span>
+                </div>
+                <div class="locked-feature">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Funding</span>
+                </div>
+                <div class="locked-feature">
+                    <i class="fas fa-copy"></i>
+                    <span>Company Lookalikes</span>
+                </div>
+            </div>
+            
+            <button class="view-plans-btn">View Plans</button>
+        </div>
+    </main>
+
+    <script>
+        // Add interactivity to navigation items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Add interactivity to filter tags
+        document.querySelectorAll('.filter-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        // Make the view plans button interactive
+        document.querySelector('.view-plans-btn').addEventListener('click', function() {
+            alert('Premium plans shown here. This would open a modal in a real application.');
+        });
+        
+        // Make the upgrade button interactive
+        document.querySelector('.upgrade-btn').addEventListener('click', function() {
+            alert('Upgrade modal shown here. This would open a pricing modal in a real application.');
+        });
+    </script>
+</body>
+</html>
